@@ -72,19 +72,19 @@ def main():
     level = st.selectbox("Select a Reading Level", options=level_description.keys(),
                          format_func=lambda x: f"{x} - {level_description[x]}")
 
-     if genre and level:
-        if st.button('Write'):
-            with st.spinner('Generating your story...'):
-                story_text = generate_story(genre, level)
-                if story_text:
-                    chapter_paths = write_story_to_files(story_text, genre)
-                    for path in chapter_paths:
-                        with open(f"{path}/page.md", "r") as file:
-                            page_text = file.read()
-                        with open(f"{path}/image_url.txt", "r") as file:
-                            image_url = file.read().strip()
-                        st.markdown(page_text)
-                        st.image(image_url)
+    if genre and level:
+      if st.button('Write'):
+          with st.spinner('Generating your story...'):
+              story_text = generate_story(genre, level)
+              if story_text:
+                  chapter_paths = write_story_to_files(story_text, genre)
+                  for path in chapter_paths:
+                      with open(f"{path}/page.md", "r") as file:
+                          page_text = file.read()
+                      with open(f"{path}/image_url.txt", "r") as file:
+                          image_url = file.read().strip()
+                      st.markdown(page_text)
+                      st.image(image_url)
 
 if __name__ == "__main__":
     st.set_page_config(layout="wide")
