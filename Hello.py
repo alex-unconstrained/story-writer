@@ -12,6 +12,14 @@ client = OpenAI()
 # Load your OpenAI API key from an environment variable for security
 client.api_key = st.secrets["OPENAI_API_KEY"]
 
+def display_dynamic_page(story_text, image_url):
+    # Display the story text
+    st.markdown(story_text)
+    # Display the image using the URL
+    st.image(image_url)
+
+
+
 def generate_story(genre, level):
     try:
         prompt = f"Write a {genre} story suitable for a {level} reading level."
@@ -40,7 +48,6 @@ def generate_image(prompt):
             quality="standard",
             n=1,
         )
-        print("Sending image request...")
         return response.data[0].url
     except Exception as e:
         st.error("An error occurred while generating the image. Please try again.")
@@ -68,7 +75,7 @@ def write_story_to_files(story_text, genre):
     return chapter_paths
 
 def main():
-    st.title('Story and Image Generator')
+    st.title('Dynamic Story and Image Generator')
 
     genre = st.radio("Choose a Genre", ('Fantasy', 'Sci-Fi', 'Mystery'))
     level_description = {
@@ -80,18 +87,14 @@ def main():
                          format_func=lambda x: f"{x} - {level_description[x]}")
 
     if genre and level:
-      if st.button('Write'):
-          with st.spinner('Generating your story...'):
-              story_text = generate_story(genre, level)
-              if story_text:
-                  chapter_paths = write_story_to_files(story_text, genre)
-                  for path in chapter_paths:
-                      with open(f"{path}/page.md", "r") as file:
-                          page_text = file.read()
-                      with open(f"{path}/image_url.txt", "r") as file:
-                          image_url = file.read().strip()
-                      st.markdown(page_text)
-                      st.image(image_url)
+        if st.button('Generate Story'):
+            with st.spinner('Generating your story...'):
+                story_text = generate_story(genre, level)
+                if story_text:
+                    # Split story into pages here if necessary
+                    # For simplicity, assuming single page
+                    image_url = generate_image("A relevant scene")  # Replace with relevant prompt
+                    display_dynamic_page(story_text, image_url)
 
 if __name__ == "__main__":
     st.set_page_config(layout="wide")
