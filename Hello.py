@@ -1,9 +1,13 @@
 import streamlit as st
 import openai
-import os
+import uuid
+import time
+import pandas as pd
+import io
+
 
 # Load your OpenAI API key from an environment variable for security
-openai.api_key = os.getenv('OPENAI_API_KEY')
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 def generate_story(genre, level):
     try:
