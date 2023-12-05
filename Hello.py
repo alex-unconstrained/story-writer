@@ -11,6 +11,27 @@ client = OpenAI()
 # Load your OpenAI API key from an environment variable for security
 client.api_key = st.secrets["OPENAI_API_KEY"]
 
+# Streamlit page properties
+st.set_page_config()
+
+# Streamit book properties
+stb.set_book_config(menu_title="streamlit_book",
+                    menu_icon="lightbulb",
+                    options=[
+                            "What's new on v0.7.0?",
+                            "Core Features",
+                            ],
+                    paths=[
+                          "pages/00_whats_new.py", # single file
+                          "pages/01 Multitest", # a folder
+                          ],
+                    icons=[
+                          "code",
+                          "robot",
+                          ],
+                    save_answers=True,
+                    )
+
 def generate_story(genre, level):
     try:
         prompt = f"Write a {genre} story suitable for a {level} reading level, with keywords in **bold** for learning."
