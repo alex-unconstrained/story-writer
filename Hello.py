@@ -1,20 +1,26 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 import uuid
 import time
 import pandas as pd
 import io
 
+client = OpenAI()
 
 # Load your OpenAI API key from an environment variable for security
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+client.api_key = st.secrets["OPENAI_API_KEY"]
+
+
 
 def generate_story(genre, level):
     try:
         # Formulate the prompt
         prompt = f"Write a {genre} story suitable for a {level} reading level."
         # Call the OpenAI API
-        response = openai.Completion.create(engine="text-davinci-003", prompt=prompt, max_tokens=500)
+        response = client.chat.completions.create(
+  model="gpt-3.5-turbo",
+  messages=[
+    {"role": "system", "content": prompt}])
         return response.choices[0].text
     except Exception as e:
         # Handle exceptions like API errors
