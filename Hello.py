@@ -17,11 +17,14 @@ def generate_story(genre, level):
         # Formulate the prompt
         prompt = f"Write a {genre} story suitable for a {level} reading level."
         # Call the OpenAI API
-        response = client.chat.completions.create(
-  model="gpt-3.5-turbo",
-  messages=[
-    {"role": "system", "content": prompt}])
-        return response['choices'][0]['message']['content']
+        completion = client.chat.completions.create(
+          model="gpt-3.5-turbo",
+          messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+          ]
+        )
+        return completion.choices[0].message
     except Exception as e:
         # Handle exceptions like API errors
         st.error("An error occurred while generating the story. Please try again.")
