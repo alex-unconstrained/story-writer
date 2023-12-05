@@ -91,10 +91,22 @@ def main():
             with st.spinner('Generating your story...'):
                 story_text = generate_story(genre, level)
                 if story_text:
-                    # Split story into pages here if necessary
-                    # For simplicity, assuming single page
-                    image_url = generate_image("A relevant scene")  # Replace with relevant prompt
-                    display_dynamic_page(story_text, image_url)
+                    story_pages = story_text.split("\n\n")  # Splitting story into pages
+                    chapters = []
+                    for page_text in story_pages:
+                        image_url = generate_image(f"A scene depicting {page_text[:30]}...")
+                        chapter_content = f"![Image]({image_url})\n\n{page_text}"
+                        chapters.append(chapter_content)
+
+                    # Configure Streamlit Book
+                    stb.set_book_config(menu_title="Story Chapters", 
+                                        show_page_number=True,
+                                        show_scroll_top=True,
+                                        wide_mode=True)
+                    
+                    # Add chapters to the book
+                    for chapter in chapters:
+                        stb.add_chapter(content=chapter)
 
 if __name__ == "__main__":
     st.set_page_config(layout="wide")
