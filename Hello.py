@@ -1,51 +1,46 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import streamlit as st
-from streamlit.logger import get_logger
+import openai
+import os
 
-LOGGER = get_logger(__name__)
+# Load your OpenAI API key from an environment variable for security
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
+def generate_story(genre, level):
+    try:
+        # Formulate the prompt
+        prompt = f"Write a {genre} story suitable for a {level} reading level."
+        # Call the OpenAI API
+        response = openai.Completion.create(engine="text-davinci-003", prompt=prompt, max_tokens=500)
+        return response.choices[0].text
+    except Exception as e:
+        # Handle exceptions like API errors
+        st.error("An error occurred while generating the story. Please try again.")
+        print(e)
 
-def run():
-    st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
-    )
+def main():
+    st.title('Story Generator')
 
-    st.write("# Welcome to Streamlit! 👋")
+    # Genre Selection with enhanced UI
+    genre = st.radio("Choose a Genre", ('Fantasy', 'Sci-Fi', 'Mystery'))
 
-    st.sidebar.success("Select a demo above.")
+    # Reading Level Selection with additional information
+    level_description = {
+        'A': 'Beginner (Ages 5-7)',
+        'B': 'Intermediate (Ages 8-10)',
+        'C': 'Advanced (Ages 11+)'
+    }
+    level = st.selectbox("Select a Reading Level", options=level_description.keys(),
+                         format_func=lambda x: f"{x} - {level_description[x]}")
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+    # Write Button with conditional activation
+    if genre and level:
+        if st.button('Write'):
+            with st.spinner('Generating your story...'):
+                story = generate_story(genre, level)
+                if story:
+                    st.text_area("Your Story", story, height=300)
 
-
+# Responsive design considerations
 if __name__ == "__main__":
-    run()
+    st.set_page_config(layout="wide")
+    main()
