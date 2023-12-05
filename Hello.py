@@ -1,5 +1,6 @@
 import streamlit as st
 from openai import OpenAI
+import os
 import uuid
 import time
 import pandas as pd
@@ -14,6 +15,7 @@ client.api_key = st.secrets["OPENAI_API_KEY"]
 def generate_story(genre, level):
     try:
         prompt = f"Write a {genre} story suitable for a {level} reading level."
+        print("Sending prompt...")
         completion = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -21,7 +23,10 @@ def generate_story(genre, level):
                 {"role": "user", "content": prompt}
             ]
         )
-        return completion.choices[0].message
+        # Ensure the response is extracted as a string
+        story_text = completion.choices[0].message["content"] if completion.choices else ""
+        print(story_text)
+        return story_text
     except Exception as e:
         st.error("An error occurred while generating the story. Please try again.")
         print(e)
@@ -35,6 +40,7 @@ def generate_image(prompt):
             quality="standard",
             n=1,
         )
+        print("Sending image request...")
         return response.data[0].url
     except Exception as e:
         st.error("An error occurred while generating the image. Please try again.")
@@ -43,6 +49,7 @@ def generate_image(prompt):
 def write_story_to_files(story_text, genre):
     story_pages = story_text.split("\n\n")  # Assuming each paragraph is a new page
     chapter_paths = []
+    print("Writing story to files...")
     for i, page_text in enumerate(story_pages, start=1):
         chapter_dir = f"pages/{i:02d}_chapter_{genre}"
         os.makedirs(chapter_dir, exist_ok=True)
