@@ -10,8 +10,7 @@ import streamlit_book as stb
 client = OpenAI()
 
 # Load your OpenAI API key from an environment variable for security
-#client.api_key = st.secrets["OPENAI_API_KEY"]
-client.api_key = os.environ.get("OPENAI_API_KEY")
+client.api_key = st.secrets["OPENAI_API_KEY"]
 
 def display_dynamic_page(story_text, image_url):
     # Display the story text
