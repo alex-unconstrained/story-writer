@@ -10,7 +10,8 @@ import streamlit_book as stb
 client = OpenAI()
 
 # Load your OpenAI API key from an environment variable for security
-client.api_key = st.secrets["OPENAI_API_KEY"]
+#client.api_key = st.secrets["OPENAI_API_KEY"]
+client.api_key = os.environ.get("OPENAI_API_KEY")
 
 def display_dynamic_page(story_text, image_url):
     # Display the story text
@@ -36,8 +37,9 @@ def generate_story(genre, level):
         print(story_text)
         return story_text
     except Exception as e:
-        st.error("An error occurred while generating the story. Please try again.")
-        print(e)
+        error_message = f"Error in generate_story: {e}"
+        st.error(error_message)
+        print(error_message)
 
 def generate_image(prompt):
     try:
@@ -50,8 +52,9 @@ def generate_image(prompt):
         )
         return response.data[0].url
     except Exception as e:
-        st.error("An error occurred while generating the image. Please try again.")
-        print(e)
+        error_message = f"Error in generate_image: {e}"
+        st.error(error_message)
+        print(error_message)
 
 def write_story_to_files(story_text, genre):
     story_pages = story_text.split("\n\n")  # Assuming each paragraph is a new page
